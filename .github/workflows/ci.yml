@@ -1,0 +1,58 @@
+name: Testar Queries SQL
+
+on:
+  push:
+    branches:
+      - main     # Roda automaticamente para pushs na branch "main"
+  pull_request:
+    branches:
+      - main     # Roda para PRs feitos na branch "main"
+
+jobs:
+  sql-tests:
+    name: Executar Testes SQL
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: escola
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost --password=password"
+          --health-interval=15s
+          --health-timeout=5s
+          --health-retries=7
+
+    steps:
+      # Passo 1: Fazer checkout do código da branch main (do repositório do aluno)
+      - name: Checkout código do aluno
+        uses: actions/checkout@v3
+
+      # 2. Buscar os testes da branch do professor (solucao-final)
+      - name: Fetch Tests from Professor Repository
+        run: |
+          echo "Clonando os testes do repositório do professor"
+          git remote add joseaugustogoncalves https://github.com/joseaugustogoncalves/1-LMD-Produtos-Simples.git
+          git fetch joseaugustogoncalves solucao-final
+          git checkout joseaugustogoncalves/solucao-final -- src/test
+      
+      # Passo 3: Instalar cliente MySQL
+      - name: Instalar cliente MySQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
+
+      # Passo 4: Configurar base de dados usando `database_setup.sql`
+      - name: Configurar Base de Dados
+        run: |
+          mysql -h 127.0.0.1 -u root -ppassword -e "SELECT VERSION();" # Testar conexão
+          mysql -h 127.0.0.1 -u root -ppassword < resources/database_setup.sql
+
+      # Passo 5: Executar Testes
+      - name: Run Test Queries
+        run: |
+          mysql -h 127.0.0.1 -u root -ppassword < tests/test_queries.sql
