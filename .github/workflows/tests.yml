@@ -3,10 +3,10 @@ name: Testar Queries SQL
 on:
   push:
     branches:
-      - main     # Roda automaticamente para pushs na branch "main"
+      - master     # Roda automaticamente para pushs na branch "main"
   pull_request:
     branches:
-      - main     # Roda para PRs feitos na branch "main"
+      - master     # Roda para PRs feitos na branch "main"
 
 jobs:
   sql-tests:
@@ -52,7 +52,13 @@ jobs:
           mysql -h 127.0.0.1 -u root -ppassword -e "SELECT VERSION();" # Testar conexão
           mysql -h 127.0.0.1 -u root -ppassword < resources/database_setup.sql
 
-      # Passo 5: Executar Testes
+      # Step 5: Executar queries do aluno presentes no arquivo solucao.sql
+      - name: Executar queries fornecidas pelo aluno
+        run: |
+          echo "Executando as queries do aluno..."
+          mysql -h 127.0.0.1 -u root -ppassword < solucao.sql
+
+      # Passo 6: Executar Testes
       - name: Run Test Queries
         run: |
           mysql -h 127.0.0.1 -u root -ppassword < tests/test_queries.sql
