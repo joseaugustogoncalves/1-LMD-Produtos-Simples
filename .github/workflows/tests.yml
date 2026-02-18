@@ -62,3 +62,10 @@ jobs:
       - name: Run Test Queries
         run: |
           mysql -h 127.0.0.1 -u root -ppassword < tests/test_queries.sql
+
+      - name: Dar permissão de execução ao script de validação
+        run: chmod +x tests/validate_tests.sh
+
+      - name: Executar validação automática
+        run: |
+          ./tests/validate_tests.sh
