@@ -1,3 +1,5 @@
+USE escola;
+
 -- Solução 1: Listar todos os produtos
 SELECT * FROM Produto;
 
