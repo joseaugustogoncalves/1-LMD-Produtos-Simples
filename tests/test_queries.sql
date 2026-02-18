@@ -1,3 +1,5 @@
+use escola;
+
 -- Teste 1: Listar todos os produtos
 SELECT 'TESTE 1' AS Teste, COUNT(*) AS resultado_esperado
 FROM Produto;
